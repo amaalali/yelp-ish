@@ -1,14 +1,10 @@
 language: ruby
-rvm: 2.3.0
- # - jruby
- # - rbx-2
 
- before_install:
-# - sed -i '2d' Gemfile
-# - sudo apt-get update -qq
+rvm: 2.3.0
+
+before_install:
   - sudo apt-get install -qq postgresql-server-dev-9.3
 
 before_script:
   - psql -c 'create database yelp_clone_test;' -U postgres
-# uncomment and edit the following line if your project needs to run something other than `rake`:
-# script: bundle exec rspec spec
+  - psql -c 'create database yelp_clone_test;' -U postgres
