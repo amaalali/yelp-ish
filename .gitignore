@@ -17,4 +17,7 @@
 .byebug_history
 
 # Don't check in credentials
-config/secrets.yml
+config/env.yml
+config/initializers/api.rb
+
+facebook.yml
