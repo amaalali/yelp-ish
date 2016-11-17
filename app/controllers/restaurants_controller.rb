@@ -10,11 +10,12 @@ class RestaurantsController < ApplicationController
   def create
     @restaurant = Restaurant.new(restaurant_params)
     if @restaurant.save
+      flash[:notice] = "You have successfully added: #{@restaurant.name}"
       redirect_to restaurants_path
     else
       render 'new'
     end
-end
+  end
 
   def show
     @restaurant = Restaurant.find(params[:id])
@@ -35,11 +36,11 @@ end
     @restaurant.destroy
     flash[:notice] = 'Restaurant deleted successfully'
     redirect_to '/restaurants'
- end
+  end
 
-private
+  private
+
   def restaurant_params
     params.require(:restaurant).permit(:name, :description)
   end
-
 end
