@@ -11,7 +11,9 @@ class RestaurantsController < ApplicationController
   end
 
   def create
-    @restaurant = Restaurant.new(restaurant_params)
+    @user = current_user
+    @restaurant = @user.restaurants.new(restaurant_params)
+    # @restaurant = Restaurant.new(restaurant_params)
     if @restaurant.save
       flash[:notice] = "You have successfully added: #{@restaurant.name}"
       redirect_to restaurants_path
@@ -44,6 +46,7 @@ class RestaurantsController < ApplicationController
   private
 
   def restaurant_params
-    params.require(:restaurant).permit(:name, :description)
+    user_id = current_user.id
+    params.require(:restaurant).permit(:name, :description, :user_id)
   end
 end
