@@ -23,7 +23,6 @@ end
 def add_restaurant
   visit('restaurants/new')
   fill_in('Name', with: 'KFC')
-  fill_in('Description', with: 'Deep fried goodness')
   click_button('Create Restaurant')
 end
 

@@ -15,12 +15,13 @@ context 'no restaurants have been added' do
   end
 
 context 'restaurants have been added' do
-  before do Restaurant.create(name: 'KFC')
+  before do
+    helper_create_restaurant
   end
 
   scenario 'display restaurants' do
     visit '/restaurants'
-    expect(page).to have_content('KFC')
+    expect(page).to have_content('Frank Doubles')
     expect(page).not_to have_content('No restaurants yet')
   end
 end
@@ -38,18 +39,21 @@ end
 
 context 'viewing restaurants' do
 
-  let!(:kfc){ Restaurant.create(name:'KFC') }
+  let!(:frank){ helper_create_restaurant }
 
   scenario 'lets a user view a restaurant' do
     visit '/restaurants'
-    click_link 'KFC'
-    expect(page).to have_content 'KFC'
-    expect(current_path).to eq "/restaurants/#{kfc.id}"
+    click_link 'Frank Doubles'
+    expect(page).to have_content 'Frank Doubles'
+    expect(current_path).to eq "/restaurants/#{frank.id}"
   end
 end
 
 context 'editing restaurants' do
-  before(:each) { helper_create_restaurant }
+  before(:each) do
+    helper_create_restaurant
+      click_link "Sign out"
+    end
 
   context 'user logged-in' do
     scenario 'user that created = user that edits' do
@@ -69,7 +73,7 @@ context 'editing restaurants' do
       visit '/restaurants'
       click_link 'Edit Frank Doubles'
       expect(page).to have_content 'Frank Doubles'
-      expect(page).to have_content 'Sorry, you cannot perform delete/edit this restaurant'
+      expect(page).to have_content 'You are not the owner of this restuarant'
     end
   end
 
@@ -92,7 +96,10 @@ context 'editing restaurants' do
 end
 
 context 'deleting restaurants' do
-  before(:each) { helper_create_restaurant }
+  before(:each) do
+    helper_create_restaurant
+    click_link "Sign out"
+  end
 
   context 'user logged-in' do
     scenario 'user that created = user that deletes' do
@@ -108,7 +115,7 @@ context 'deleting restaurants' do
       visit '/restaurants'
       click_link 'Delete Frank Doubles'
       expect(page).to have_content 'Frank Doubles'
-      expect(page).to have_content 'Sorry, you cannot perform delete/edit this restaurant'
+      expect(page).to have_content 'You are not the owner of this restuarant'
     end
   end
 
