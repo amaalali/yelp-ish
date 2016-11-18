@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-feature 'restaurants' do
+feature 'Restaurants' do
   context 'no restaurants have been added' do
     scenario 'should display a prompt to add a restaurant' do
       visit '/restaurants'
@@ -9,23 +9,21 @@ feature 'restaurants' do
     end
   end
 
-  context 'restaurants have been added' do
-    before do
-      Restaurant.create(name: 'KFC')
-    end
+  context 'have been added' do
+    before { helper_create_restaurant }
 
     scenario 'display restaurants' do
       visit '/restaurants'
-      expect(page).to have_content 'KFC'
+      expect(page).to have_content 'Frank Doubles'
       expect(page).not_to have_content 'No restaurants yet'
     end
   end
 
-  context 'creating restaurants' do
+  context 'creating' do
     context 'user logged-in' do
       before(:each) do
         visit '/restaurants'
-        sign_in
+        helper_sign_in
         click_link 'Add a restaurant'
       end
 
@@ -61,45 +59,95 @@ feature 'restaurants' do
   end
 
   context 'viewing restaurants' do
-    let!(:kfc) { Restaurant.create(name: 'KFC') }
+    let!(:frank) { helper_create_restaurant }
 
-    scenario 'lets a user view a restaurant' do
+    scenario 'in detail' do
       visit '/restaurants'
-      click_link 'KFC'
-      expect(page).to have_content 'KFC'
-      expect(current_path).to eq "/restaurants/#{kfc.id}"
+      click_link 'Frank Doubles'
+      expect(page).to have_content 'Frank Doubles'
+      expect(current_path).to eq "/restaurants/#{frank.id}"
     end
   end
 
   context 'editing restaurants' do
-    before(:each) do
-      Restaurant.create name: 'KFC', description: 'Deep fried goodness'
-      sign_in
-      visit '/restaurants'
+    before(:each) { helper_create_restaurant }
+
+    context 'user logged-in' do
+      scenario 'user that created = user that edits' do
+        helper_sign_in
+        visit '/restaurants'
+        click_link 'Edit Frank Doubles'
+        fill_in 'Name', with: 'Frank Doubles Edit'
+        fill_in 'Description', with: 'The best doubles in TnT Edit'
+        click_button 'Update Restaurant'
+        expect(page).to have_content 'Frank Doubles Edit'
+        expect(page).to have_content 'The best doubles in TnT Edit'
+        expect(current_path).to eq '/restaurants'
+      end
+
+      scenario 'user that created = user that edits' do
+        helper_sign_in_2
+        visit '/restaurants'
+        click_link 'Edit Frank Doubles'
+        expect(page).to have_content 'Frank Doubles'
+        expect(page).to have_content 'Sorry, you cannot perform delete/edit this restaurant'
+      end
     end
 
-    scenario 'let a user edit a restaurant' do
-      click_link 'Edit KFC'
-      fill_in 'Name', with: 'Kentucky Fried Chicken'
-      fill_in 'Description', with: 'Deep fried goodness'
-      click_button 'Update Restaurant'
-      expect(page).to have_content 'Kentucky Fried Chicken'
-      expect(page).to have_content 'Deep fried goodness'
-      expect(current_path).to eq '/restaurants'
+
+    context 'user signed-out' do
+      before(:each) do
+        visit '/restaurants'
+        click_link 'Edit Frank Doubles'
+      end
+
+      scenario 'prompts user to sign-in' do
+        expect(page).to have_content 'You need to sign in or sign up before continuing.'
+      end
+
+      scenario 'restaurant still listed' do
+        visit '/restaurants'
+        expect(page).to have_content 'Frank Doubles'
+      end
     end
   end
 
   context 'deleting restaurants' do
-    before(:each) do
-      Restaurant.create name: 'KFC', description: 'Deep fried goodness'
-      sign_in
-      visit '/restaurants'
+    before(:each) { helper_create_restaurant }
+
+    context 'user logged-in' do
+      scenario 'user that created = user that deletes' do
+        helper_sign_in
+        visit '/restaurants'
+        click_link 'Delete Frank Doubles'
+        expect(page).not_to have_content 'Frank Doubles'
+        expect(page).to have_content 'Restaurant deleted successfully'
+      end
+
+      scenario 'user that created = user that deletes' do
+        helper_sign_in_2
+        visit '/restaurants'
+        click_link 'Delete Frank Doubles'
+        expect(page).to have_content 'Frank Doubles'
+        expect(page).to have_content 'Sorry, you cannot perform delete/edit this restaurant'
+      end
     end
 
-    scenario 'removes a restaurant when a user clicks a delete link' do
-      click_link 'Delete KFC'
-      expect(page).not_to have_content 'KFC'
-      expect(page).to have_content 'Restaurant deleted successfully'
+
+    context 'user signed-out' do
+      before(:each) do
+        visit '/restaurants'
+        click_link 'Delete Frank Doubles'
+      end
+
+      scenario 'prompts user to sign-in' do
+        expect(page).to have_content 'You need to sign in or sign up before continuing.'
+      end
+
+      scenario 'restaurant still listed' do
+        visit '/restaurants'
+        expect(page).to have_content 'Frank Doubles'
+      end
     end
   end
 end
