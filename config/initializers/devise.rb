@@ -35,7 +35,7 @@ Devise.setup do |config|
   # You can also supply a hash where the value is a boolean determining whether
   # or not authentication should be aborted when the value is not present.
   # config.authentication_keys = [:email]
-  config.omniauth :facebook, FACEBOOK_APP_ID, FACEBOOK_APP_SECRET,
+  config.omniauth :facebook, ENV['FACEBOOK_APP_ID'], ENV['FACEBOOK_APP_SECRET'],
                   callback_url: "http://localhost:3000/users/auth/facebook/callback",
                   scope: 'email', display: 'popup'
 
