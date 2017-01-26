@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-feature 'Restaurants' do
+feature 'Restaurants features' do
   context 'no restaurants have been added' do
     scenario 'should display a prompt to add a restaurant' do
       visit '/restaurants'
@@ -85,12 +85,10 @@ feature 'Restaurants' do
         expect(current_path).to eq '/restaurants'
       end
 
-      scenario 'user that created = user that edits' do
+      scenario 'user that created != user that edits' do
         helper_sign_in_2
         visit '/restaurants'
-        click_link 'Edit Frank Doubles'
-        expect(page).to have_content 'Frank Doubles'
-        expect(page).to have_content 'Sorry, you cannot perform delete/edit this restaurant'
+        expect(page).not_to have_content 'Edit Frank Doubles'
       end
     end
 
@@ -98,16 +96,10 @@ feature 'Restaurants' do
     context 'user signed-out' do
       before(:each) do
         visit '/restaurants'
-        click_link 'Edit Frank Doubles'
       end
 
-      scenario 'prompts user to sign-in' do
-        expect(page).to have_content 'You need to sign in or sign up before continuing.'
-      end
-
-      scenario 'restaurant still listed' do
-        visit '/restaurants'
-        expect(page).to have_content 'Frank Doubles'
+      scenario 'not presented with option to edit' do
+        expect(page).not_to have_link 'Edit Frank Doubles'
       end
     end
   end
@@ -124,12 +116,10 @@ feature 'Restaurants' do
         expect(page).to have_content 'Restaurant deleted successfully'
       end
 
-      scenario 'user that created = user that deletes' do
+      scenario 'user that created != user that deletes' do
         helper_sign_in_2
         visit '/restaurants'
-        click_link 'Delete Frank Doubles'
-        expect(page).to have_content 'Frank Doubles'
-        expect(page).to have_content 'Sorry, you cannot perform delete/edit this restaurant'
+        expect(page).not_to have_link 'Delete Frank Doubles'
       end
     end
 
@@ -137,16 +127,10 @@ feature 'Restaurants' do
     context 'user signed-out' do
       before(:each) do
         visit '/restaurants'
-        click_link 'Delete Frank Doubles'
       end
 
       scenario 'prompts user to sign-in' do
-        expect(page).to have_content 'You need to sign in or sign up before continuing.'
-      end
-
-      scenario 'restaurant still listed' do
-        visit '/restaurants'
-        expect(page).to have_content 'Frank Doubles'
+        expect(page).not_to have_link 'Delete Frank Doubles'
       end
     end
   end
